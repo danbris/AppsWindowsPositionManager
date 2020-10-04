@@ -11,7 +11,8 @@
 			<Button Name="btnGetOpenedWindows"
 					Click="BtnGetOpenedWindows_OnClick"
 					Height="50"
-					Width="100" />
+					Width="100" 
+					Content="Start manager"/>
 			<ListBox Name="lstBox"
 					 Grid.Row="1"/>
 	</Grid>

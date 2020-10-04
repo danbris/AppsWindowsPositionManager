@@ -73,7 +73,8 @@ namespace WinPositionLib
 	    private void RestoreWindowsPositons()
 	    {
 		    foreach (var windowsPosition in _windowsPositions)
-		    {
+		    {// skip minimized windows
+
 			    var windowRect = windowsPosition.Value;
 			    User32Wrapper.SetWindowPos(windowsPosition.Key, (IntPtr)SpecialWindowHandles.HWND_NOTOPMOST, windowRect.Left,
 				    windowRect.Top, windowRect.Right - windowRect.Left, windowRect.Bottom - windowRect.Top,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Timers;
@@ -13,11 +14,12 @@ namespace WindowsPositionManager
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private const string USER32 = "user32.dll";
 		private readonly Timer _monitorCheckTimer = new Timer(10000);
 		private readonly WinPosition _winPosition = new WinPosition();
 
 		private int _previousMonitorNo = 0;
-		Dictionary<IntPtr, Rect> _windowsPositions = new Dictionary<IntPtr, Rect>();
+		readonly Dictionary<IntPtr, Rect> _windowsPositions = new Dictionary<IntPtr, Rect>();
 
 		public MainWindow()
 		{
@@ -26,51 +28,38 @@ namespace WindowsPositionManager
 
 		
 
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr FindWindow(string strClassName, string strWindowName);
+		[DllImport(USER32, CharSet = CharSet.Unicode)]
+		private static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
-		[DllImport("user32.dll")]
-		public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+		[DllImport(USER32)]
+		private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
 
-		[DllImport("user32.dll")]
-		public static extern bool EnumWindows(EnumWindowsProc enumWindowsProc, int lParam);
-		public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
+		[DllImport(USER32)]
+		private static extern bool EnumWindows(EnumWindowsProc enumWindowsProc, int lParam);
+		private delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
 
 		[DllImport("user32")]
 		private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lpRect, MonitorEnumProc callback, int dwData);
 		private delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref Rect pRect, int dwData);
 
 
-		[DllImport("USER32.DLL")]
+		[DllImport(USER32)]
 		private static extern bool IsWindowVisible(IntPtr hWnd);
 
-		[DllImport("USER32.DLL")]
+		[DllImport(USER32, CharSet = CharSet.Unicode)]
 		private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-		[DllImport("USER32.DLL")]
+		[DllImport(USER32)]
 		private static extern int GetWindowTextLength(IntPtr hWnd);
 
-		[DllImport("USER32.DLL")]
+		[DllImport(USER32)]
 		private static extern IntPtr GetShellWindow();
 
-		[DllImport("USER32.DLL")]
+		[DllImport(USER32)]
 		static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy,
 			SetWindowPosFlags uFlags);
 
-		public struct Rect
-		{
-			public int Left { get; set; }
-			public int Top { get; set; }
-			public int Right { get; set; }
-			public int Bottom { get; set; }
-
-			public override string ToString()
-			{
-				return $"{Left}:{Top}:{Right}:{Bottom}";
-			}
-		}
-
-		public static IDictionary<IntPtr, string> GetOpenWindows()
+		private static IDictionary<IntPtr, string> GetOpenWindows()
 		{
 			IntPtr shellWindow = GetShellWindow();
 			Dictionary<IntPtr, string> windows = new Dictionary<IntPtr, string>();
@@ -99,7 +88,7 @@ namespace WindowsPositionManager
 			_monitorCheckTimer.Elapsed += OnMonitorCheck;
 			_monitorCheckTimer.Start();
 
-			return;
+			//return;
 			var count = GetMonitorCount();
 			foreach (KeyValuePair<IntPtr, string> window in GetOpenWindows())
 			{
@@ -121,7 +110,14 @@ namespace WindowsPositionManager
 
 		private void OnMonitorCheck(object sender, ElapsedEventArgs e)
 		{
-			_winPosition.RefreshWindowsState();
+			try
+			{
+				_winPosition.RefreshWindowsState();
+			}
+			catch(Exception ex)
+			{
+				Debug.WriteLine(ex);
+			}
 		}
 
 		private int GetMonitorCount()
