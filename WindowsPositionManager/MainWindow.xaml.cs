@@ -126,10 +126,10 @@ namespace WindowsPositionManager
 
 		private int GetMonitorCount()
 		{
-			int monCount = 0;
-			bool Callback(IntPtr hDesktop, IntPtr hdc, ref Rect prect, int d) => ++monCount > 0;
+			var monCount = 0;
+			bool Callback(IntPtr hDesktop, IntPtr hdc, ref Rectangle prect, int d) => ++monCount > 0;
 
-			EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, Callback, 0);
+            User32Wrapper.EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, Callback, 0);
 
 			return monCount;
 		}
