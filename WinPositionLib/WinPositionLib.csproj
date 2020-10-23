@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IWinPosition.cs" />
     <Compile Include="ScreenConfiguration.cs" />
     <Compile Include="WindowInfo.cs" />
     <Compile Include="WinPosition.cs" />

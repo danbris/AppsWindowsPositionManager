@@ -26,7 +26,7 @@ namespace WindowsPositionManager
 			_monitorCheckTimer.Start();
 
 			//return;
-			WinPosition.GetMonitorCount();
+			_winPosition.GetMonitorCount();
 			foreach (KeyValuePair<IntPtr, string> window in _winPosition.GetOpenWindows())
 			{
 				IntPtr handle = window.Key;

@@ -6,11 +6,11 @@ using Utils.Extensions;
 
 namespace WinPositionLib
 {
-	public class WinPosition
+	public class WinPosition: IWinPosition
 	{
 		private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
 		private int _previousMonitorCount = 0;
-		private static readonly Dictionary<IntPtr, ScreenDetail> _screenConfigs = new Dictionary<IntPtr, ScreenDetail>();
+		private readonly Dictionary<IntPtr, ScreenDetail> _screenConfigs = new Dictionary<IntPtr, ScreenDetail>();
 		private readonly Dictionary<int, List<WindowInfo>> _screenWindowLayout = new Dictionary<int, List<WindowInfo>>();
 
 		public IDictionary<IntPtr, string> GetOpenWindows()
@@ -37,7 +37,7 @@ namespace WinPositionLib
 			return windows;
 		}
 
-		public static int GetMonitorCount()
+		public int GetMonitorCount()
 		{
 			//bool Callback(IntPtr hDesktop, IntPtr hdc, ref Rectangle prect, int d) => ++monCount > 0;
 			//this will enumerate all displays and call MonitorEnum for each of them
@@ -47,7 +47,7 @@ namespace WinPositionLib
 			return _screenConfigs.Count;
 		}
 
-		private static bool MonitorEnum(IntPtr hMonitor, IntPtr hdcMonitor, ref Rectangle lprcMonitor, IntPtr dwData)
+		private bool MonitorEnum(IntPtr hMonitor, IntPtr hdcMonitor, ref Rectangle lprcMonitor, IntPtr dwData)
 		{
 			var mi = new ScreenInfo();
 			mi.Size = (uint)Marshal.SizeOf(mi);
@@ -65,12 +65,13 @@ namespace WinPositionLib
 		{
 			var monitorsCount = GetMonitorCount();
 			// ignore 1 screen setup.
-			if (monitorsCount > _previousMonitorCount && _previousMonitorCount > 0)
+			// TODO: restore windows position also for 1 screen config(maybe there are windows splitting the screen in 2/3/4/...)
+			if (monitorsCount != _previousMonitorCount && _previousMonitorCount > 0)
 			{
 				//restore windows to original position when there were more monitors
 				RestoreWindowsPositions();
 			}
-			else if (_previousMonitorCount == 0 && monitorsCount > 1)
+			else if (_previousMonitorCount != 0 && monitorsCount > 1)
 		    {
 			    //save current windows positions
 			    SaveWindowsPositions();
