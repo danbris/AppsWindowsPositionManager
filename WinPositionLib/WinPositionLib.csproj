@@ -42,12 +42,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ScreenConfiguration.cs" />
+    <Compile Include="WindowInfo.cs" />
     <Compile Include="WinPosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="SetWindowsPosFlags.cs" />
     <Compile Include="SpecialWindowHandles.cs" />
     <Compile Include="User32Wrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{ec10819b-3f49-4715-98e1-a81032f75c2f}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

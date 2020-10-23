@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace WinPositionLib
 {
@@ -14,7 +11,16 @@ namespace WinPositionLib
 
 	public class ScreenDetail
 	{
-		public IntPtr ScreenHandle { get; set; }
-		public Rectangle Rectangle { get; set; }
+		public IntPtr Handle { get; set; }
+		public ScreenInfo Info { get; set; }
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct ScreenInfo
+	{
+		public uint Size;
+		public Rectangle Monitor;
+		public Rectangle Work;
+		public uint Flags;
 	}
 }
