@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Utils.Extensions;
@@ -9,7 +10,7 @@ namespace WinPositionLib
 	public class WinPosition: IWinPosition
 	{
 		private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
-		private int _previousMonitorCount = 0;
+		private int _previousMonitorCount;
 		private readonly Dictionary<IntPtr, ScreenDetail> _screenConfigs = new Dictionary<IntPtr, ScreenDetail>();
 		private readonly Dictionary<int, List<WindowInfo>> _screenWindowLayout = new Dictionary<int, List<WindowInfo>>();
 
@@ -23,19 +24,28 @@ namespace WinPositionLib
 				if (hWnd == shellWindow) return true;
 				if (!User32Wrapper.IsWindowVisible(hWnd)) return true;
 
-				var length = User32Wrapper.GetWindowTextLength(hWnd);
-				if (length == 0) return true;
+                var title = GetWindowTitle(hWnd);
+                if (string.IsNullOrEmpty(title)) return true;
 
-				var builder = new StringBuilder(length);
-				User32Wrapper.GetWindowText(hWnd, builder, length + 1);
-
-				windows[hWnd] = builder.ToString();
+				windows[hWnd] = title;
 				return true;
 
 			}, 0);
 
 			return windows;
 		}
+
+        private string GetWindowTitle(IntPtr hWnd)
+        {
+            var length = User32Wrapper.GetWindowTextLength(hWnd);
+            if (length == 0) return string.Empty;
+
+            var builder = new StringBuilder(length);
+            User32Wrapper.GetWindowText(hWnd, builder, length + 1);
+
+            return builder.ToString();
+
+        }
 
 		public int GetMonitorCount()
 		{
@@ -66,12 +76,12 @@ namespace WinPositionLib
 			var monitorsCount = GetMonitorCount();
 			// ignore 1 screen setup.
 			// TODO: restore windows position also for 1 screen config(maybe there are windows splitting the screen in 2/3/4/...)
-			if (monitorsCount != _previousMonitorCount && _previousMonitorCount > 0)
+			if (monitorsCount != _previousMonitorCount && _previousMonitorCount > 0 && _screenWindowLayout.Any())
 			{
 				//restore windows to original position when there were more monitors
 				RestoreWindowsPositions();
 			}
-			else if (_previousMonitorCount != 0 && monitorsCount > 1)
+			else if (_previousMonitorCount == monitorsCount && monitorsCount > 1)
 		    {
 			    //save current windows positions
 			    SaveWindowsPositions();
@@ -91,7 +101,7 @@ namespace WinPositionLib
 				User32Wrapper.GetWindowRect(handle, ref windowRect);
 				//var monitorHandle = User32Wrapper.MonitorFromRect(ref windowRect, MONITOR_DEFAULTTONEAREST);
 
-				windowConfiguration.Add(new WindowInfo { WHandle = handle, Position = windowRect });
+				windowConfiguration.Add(new WindowInfo { WHandle = handle, Position = windowRect, Title = GetWindowTitle(handle)});
 			}
 
 			_screenWindowLayout.SafeAdd(screenCount, windowConfiguration);
