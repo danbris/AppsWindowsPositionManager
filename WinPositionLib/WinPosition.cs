@@ -78,20 +78,13 @@ namespace WinPositionLib
 		{
 			var monitorsCount = GetMonitorCount();
 			
-			// Ignore single screen setup
-			if (monitorsCount <= MINIMUM_MONITOR_COUNT)
-			{
-				_previousMonitorCount = monitorsCount;
-				return;
-			}
-
-			// Restore windows when more monitors are detected after having fewer
+			// Restore windows when more monitors are detected after having multiple monitors previously
 			if (monitorsCount > _previousMonitorCount && _previousMonitorCount > MINIMUM_MONITOR_COUNT)
 			{
 				RestoreWindowsPositions();
 			}
 			// Save current layout when transitioning from single to multiple monitors
-			else if (_previousMonitorCount == MINIMUM_MONITOR_COUNT)
+			else if (_previousMonitorCount <= MINIMUM_MONITOR_COUNT && monitorsCount > MINIMUM_MONITOR_COUNT)
 			{
 				SaveWindowsPositions();
 			}
@@ -127,10 +120,7 @@ namespace WinPositionLib
 		private void RestoreWindowsPositions()
 		{
 			var screenCount = GetMonitorCount();
-			if (!_screenWindowLayout.ContainsKey(screenCount))
-			{
-				return;
-			}
+			if (!_screenWindowLayout.ContainsKey(screenCount)) return;
 
 			foreach (var windowsPosition in _screenWindowLayout[screenCount])
 			{
