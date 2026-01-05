@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceProcess;
 
 namespace WindowsPositionKeeper
 {
-	static class Program
+	/// <summary>
+	/// Main program entry point for the Windows Position Keeper service.
+	/// </summary>
+	internal static class Program
 	{
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
-		static void Main()
+		private static void Main()
 		{
-			ServiceBase[] ServicesToRun;
-			ServicesToRun = new ServiceBase[]
+			var servicesToRun = new ServiceBase[]
 			{
 				new WindowsKeeper()
 			};
-			ServiceBase.Run(ServicesToRun);
+			ServiceBase.Run(servicesToRun);
 		}
 	}
 }
