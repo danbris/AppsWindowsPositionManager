@@ -32,14 +32,5 @@ namespace WindowsPositionKeeper
 			_monitorCheckTimer.Stop();
 			_monitorCheckTimer.Elapsed -= OnMonitorCheck;
 		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				_monitorCheckTimer?.Dispose();
-			}
-			base.Dispose(disposing);
-		}
 	}
 }

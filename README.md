@@ -25,7 +25,7 @@ The application monitors your screen configuration every 10 seconds. When it det
 ## Requirements
 
 - Windows operating system
-- .NET Framework 4.7.2 or later
+- .NET 10 or later
 
 ## References
 
