@@ -4,16 +4,32 @@ using System.Text;
 
 namespace WinPositionLib
 {
+    /// <summary>
+    /// Wrapper class for User32.dll Win32 API functions.
+    /// </summary>
     public class User32Wrapper
 	{
+		/// <summary>
+		/// Retrieves a handle to a window whose class name and window name match the specified strings.
+		/// </summary>
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
+		/// <summary>
+		/// Retrieves the dimensions of the bounding rectangle of the specified window.
+		/// </summary>
 		[DllImport("user32.dll")]
 		public static extern bool GetWindowRect(IntPtr hwnd, ref Rectangle rectangle);
 
+		/// <summary>
+		/// Enumerates all top-level windows on the screen.
+		/// </summary>
 		[DllImport("user32.dll")]
 		public static extern bool EnumWindows(EnumWindowsProc enumWindowsProc, int lParam);
+		
+		/// <summary>
+		/// Delegate for EnumWindows callback.
+		/// </summary>
 		public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
 
 
@@ -34,21 +50,36 @@ namespace WinPositionLib
 		/// <param name="hdc">A handle to a device context.</param>
 		/// <param name="pRect">A pointer to a RECT structure.</param>
 		/// <param name="dwData">Application-defined data that EnumDisplayMonitors passes directly to the enumeration function.</param>
-		/// <returns></returns>
+		/// <returns>True to continue enumeration, false to stop.</returns>
 		public delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref Rectangle pRect, IntPtr dwData);
 
+		/// <summary>
+		/// Determines whether the specified window handle identifies an existing window.
+		/// </summary>
 		[DllImport("USER32.DLL")]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
 
+		/// <summary>
+		/// Copies the text of the specified window's title bar into a buffer.
+		/// </summary>
 		[DllImport("USER32.DLL")]
 		public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
+		/// <summary>
+		/// Retrieves the length of the specified window's title bar text.
+		/// </summary>
 		[DllImport("USER32.DLL")]
 		public static extern int GetWindowTextLength(IntPtr hWnd);
 
+		/// <summary>
+		/// Retrieves a handle to the Shell's desktop window.
+		/// </summary>
 		[DllImport("USER32.DLL")]
 		public static extern IntPtr GetShellWindow();
 
+		/// <summary>
+		/// Changes the size, position, and Z order of a window.
+		/// </summary>
 		[DllImport("USER32.DLL")]
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy,
 			SetWindowPosFlags uFlags);

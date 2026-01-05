@@ -12,7 +12,9 @@ namespace WindowsPositionManager
     /// </summary>
     public partial class MainWindow : Window
 	{
-		private readonly Timer _monitorCheckTimer = new Timer(10000);
+		private const int MonitorCheckIntervalMs = 10000;
+		
+		private readonly Timer _monitorCheckTimer = new Timer(MonitorCheckIntervalMs);
 		private readonly WinPosition _winPosition = new WinPosition();
 		
 		public MainWindow()
@@ -25,22 +27,18 @@ namespace WindowsPositionManager
 			_monitorCheckTimer.Elapsed += OnMonitorCheck;
 			_monitorCheckTimer.Start();
 
-			//return;
-			WinPosition.GetMonitorCount();
+			var monitorCount = _winPosition.GetMonitorCount();
+			lstBox.Items.Add($"Monitor Count: {monitorCount}");
+			
 			foreach (KeyValuePair<IntPtr, string> window in _winPosition.GetOpenWindows())
 			{
 				IntPtr handle = window.Key;
 				string title = window.Value;
 
 				var windowRect = new Rectangle();
-				User32Wrapper.GetWindowRect(handle, ref windowRect);
-
-				lstBox.Items.Add($"{handle}: {title} : {windowRect}");
-				if (title.Contains("iTunes"))
+				if (User32Wrapper.GetWindowRect(handle, ref windowRect))
 				{
-					User32Wrapper.SetWindowPos(handle, (IntPtr) SpecialWindowHandles.HWND_TOP, windowRect.Left + 1000,
-						windowRect.Top + 100, windowRect.Right - windowRect.Left, windowRect.Bottom - windowRect.Top,
-						SetWindowPosFlags.ShowWindow);
+					lstBox.Items.Add($"{handle}: {title} : {windowRect}");
 				}
 			}
 		}
