@@ -25,7 +25,27 @@ The application monitors your screen configuration every 10 seconds. When it det
 ## Requirements
 
 - Windows operating system
-- .NET Framework 4.7.2 or later
+- .NET 10 or later
+
+## Installation
+
+### Installing the Windows Service
+
+To install the WindowsPositionKeeper service, use the Windows Service Control (sc.exe) command:
+
+```cmd
+sc create "Windows Position Keeper" binPath="<path-to>\WindowsPositionKeeper.exe" start=auto
+sc description "Windows Position Keeper" "Keeps and restores windows positions when connected monitors are changing."
+sc start "Windows Position Keeper"
+```
+
+To uninstall:
+```cmd
+sc stop "Windows Position Keeper"
+sc delete "Windows Position Keeper"
+```
+
+**Note**: In .NET 10, the legacy `installutil.exe` installer is no longer supported. Use `sc.exe` commands as shown above.
 
 ## References
 
