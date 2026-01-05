@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
+﻿using System.ServiceProcess;
 using System.Timers;
 using WinPositionLib;
 
@@ -13,13 +6,14 @@ namespace WindowsPositionKeeper
 {
 	public partial class WindowsKeeper : ServiceBase
 	{
-		private readonly Timer _monitorCheckTimer = new Timer(10000);
+		private const int MonitorCheckIntervalMs = 10000;
+		
+		private readonly Timer _monitorCheckTimer = new Timer(MonitorCheckIntervalMs);
 		private readonly WinPosition _winPosition = new WinPosition();
 
 		public WindowsKeeper()
 		{
 			InitializeComponent();
-			//ServiceName = "Windows position keeper";
 		}
 
 		protected override void OnStart(string[] args)
@@ -37,6 +31,15 @@ namespace WindowsPositionKeeper
 		{
 			_monitorCheckTimer.Stop();
 			_monitorCheckTimer.Elapsed -= OnMonitorCheck;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_monitorCheckTimer?.Dispose();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
